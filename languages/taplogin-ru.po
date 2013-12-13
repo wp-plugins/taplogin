@@ -1,0 +1,124 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-04 23:20+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: taplogin.php:130
+msgid "Your AZid account is already linked to another user of this site"
+msgstr "Ваша учетная запись на AZid.ru уже связана с другим пользователем этого сайта"
+
+#: taplogin.php:198
+msgid ""
+"Email is a required field. We sent a request to your phone to get your email "
+"address stored with AZid.ru. Please approve the request, or enter your "
+"another email below"
+msgstr ""
+"Email является обязательным полем. Мы отправили запрос на ваш телефон с просьбой одобрить "
+"передачу нам вашего email, сохраненного в AZid.ru. Пожалуйста, одобрите этот запрос или "
+"введите другой ваш email ниже"
+
+#: taplogin.php:200
+msgid "E-mail address"
+msgstr "Адрес электронной почты"
+
+#: taplogin.php:200
+msgid "Continue"
+msgstr "Продолжить"
+
+#: taplogin.php:214
+msgid "Please enter a valid email address"
+msgstr "Пожалуйста, введите действительный адрес email"
+
+#: taplogin.php:344 taplogin.php:404
+msgid "TapLogin Integration"
+msgstr "TapLogin настройки"
+
+#: taplogin.php:347
+msgid "Link to TapLogin"
+msgstr "Связать с TapLogin"
+
+#: taplogin.php:356
+msgid "Please enter a valid node ID"
+msgstr "Пожалуйста, введите действительный ID узла"
+
+#: taplogin.php:358
+msgid "Please enter a valid secret key, minimum 20 characters"
+msgstr "Пожалуйста, введите секретный ключ (secret key) длиной минимум 20 символов"
+
+#: taplogin.php:373
+msgid ""
+"You can log in to this site without a password, by tapping just one button "
+"on your phone"
+msgstr ""
+"Вы можете входить на наш сайт без пароля, просто нажатием одной кнопки на вашем телефоне"
+
+#: taplogin.php:374 taplogin.php:384
+msgid ""
+"You always have an option to login with username/password in case you lose "
+"your phone"
+msgstr ""
+"У вас всегда есть возможность войти с помощью логина и пароля в случае если вы потеряете свой телефон"
+
+#: taplogin.php:383
+msgid ""
+"Do you want to log in to this site without a password, by tapping just one "
+"button on your phone? You can <a href='javascript:showTapLogin()'>set up "
+"your phone for one-tap login</a> right now"
+msgstr ""
+"Вы хотите входить на наш сайт без пароля, просто нажатием одной кнопки на вашем телефоне? "
+"Вы можете прямо сейчас <a href='javascript:showTapLogin()'>настроить свой телефон для входа с помощью телефона</a>"
+
+#: taplogin.php:406
+msgid "Options saved"
+msgstr "Настройки сохранены"
+
+#: taplogin.php:412
+msgid ""
+"Please edit Node ID and Secret Key only during initial setup and don't "
+"change them afterwards (unless the secret key was compromised)"
+msgstr ""
+"Пожалуйста, редактируйте Node ID и Secret Key только во время первоначальной настройки "
+"и не меняйте их значения в дальнейшем (кроме случаев, когда секретный ключ оказался известен третьим лицам)"
+
+#: taplogin.php:413
+msgid ""
+"If it is the first time that you set up TapLogin for your site, the secret "
+"key was already generated for you (otherwise please enter something random "
+"for Secret Key). Please <a target='_blank' href='https://www.azid.ru/control/"
+"new_desktop_app_node.php'>create a new desktop node at AZid.ru</a> by "
+"copying and pasting the secret key from here to AZid.ru, then enter here the "
+"ID of the newly created node. Save changes, and you're done"
+msgstr ""
+"Если это первый раз когда вы настраиваете TapLogin для этого сайта, секретный ключ "
+"был уже сгенерирован для вас (в противном случае, введите случайную последовательность "
+"букв и цифр в качестве значения секретного ключа). Пожалуйста, "
+"<a target='_blank' href='https://www.azid.ru/control/new_desktop_app_node.php'>создайте "
+"новый узел для настольных приложений на сайте AZid.ru</a> с помощью копирования "
+"секретного ключа отсюда на сайт AZid.ru, затем введите здесь ID только что созданного узла. "
+"Сохраните изменения, и на этом настройка завершена"
+
+#: taplogin.php:424
+msgid ""
+"Require email address (if unchecked, a random email address will be "
+"generated for all new users)"
+msgstr ""
+"При первом логине пользователя требовать адрес email (если отключено, "
+"будет сгенерирован случайный адрес email"
+
+#: taplogin.php:428
+msgid "Save Changes"
+msgstr ""

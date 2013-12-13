@@ -1,0 +1,6 @@
+==English==
+These instructions apply if you don't install the plugin from WP plugins directory but received this .zip file instead.
+In order to install this plugin, please create taplogin subfolder under your plugins directory (wp-content/plugins) and copy the entire contents of this zip archive to the taplogin subfolder.
+
+==Russian==
+Для установки модуля создайте поддиректорию taplogin внутри директории плагинов (wp-content/plugins) и скопируйте туда все содержимое этого архива.
