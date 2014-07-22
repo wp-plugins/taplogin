@@ -4,7 +4,7 @@
  *
  * @author tony
  */
-class TapAuthorization
+class TapAuthorization extends MatrixCommunication
 {
 	const MATRIX_AUTHORIZATION_PATH = "/authorize.php";
 	const MATRIX_AUTHORIZATION_RESPONSE_PATH = "/get_authorization_response.php";
@@ -68,7 +68,7 @@ class TapAuthorization
 		else
 			throw new Exception("neither employee_id nor remote_id");
 		
-		$url = EnvConf::PROTOCOL.'://www.azid.'.EnvConf::getTld('ru').self::MATRIX_AUTHORIZATION_PATH;
+		$url = self::getMatrixServerUrl().self::MATRIX_AUTHORIZATION_PATH;
 		$response = self::post($url, $arrParams);
 		if (!$response)
 			return self::genRecoverableErrorResponse("no response");
@@ -92,7 +92,7 @@ class TapAuthorization
 			'token' => TokenManager::getMyToken(self::MATRIX_NODE_ID),
 			'request_id' => $request_id,
 		);
-		$url = EnvConf::PROTOCOL.'://www.azid.'.EnvConf::getTld('ru').self::MATRIX_AUTHORIZATION_RESPONSE_PATH;
+		$url = self::getMatrixServerUrl().self::MATRIX_AUTHORIZATION_RESPONSE_PATH;
 		$response = self::post($url, $arrParams);
 		if (!$response)
 			return self::genRecoverableErrorResponse("no response");
@@ -115,19 +115,6 @@ class TapAuthorization
 		return $objResponse;
 	}
 
-	private static function post($url, array $arrParams)
-	{
-		$objCurl = curl_init($url);
-		curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($objCurl, CURLOPT_TIMEOUT, 30);
-		curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 100);
-		curl_setopt($objCurl, CURLOPT_HEADER, 0);
-		curl_setopt($objCurl, CURLOPT_POST, 1);
-		curl_setopt($objCurl, CURLOPT_POSTFIELDS, http_build_query($arrParams));
-		$strResponse = curl_exec($objCurl);
-		curl_close($objCurl);
-		return $strResponse;
-	}
 }
 
 class TapAuthorizationException extends Exception{

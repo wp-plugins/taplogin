@@ -4,7 +4,7 @@
  *
  * @author tony
  */
-class SecureRandom
+class SecureRandom extends Stateless
 {
 	/**
 	 * 

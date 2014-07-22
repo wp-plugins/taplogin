@@ -4,7 +4,7 @@
  *
  * @author tony
  */
-class TokenManager
+class TokenManager extends Stateless
 {
 	public static function calculateToken($from_node_id, $to_node_id, $from_secret_key)
 	{

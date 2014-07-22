@@ -1,30 +1,33 @@
 <?php
 /*
-Plugin Name: Tap Login
-Plugin URI: http://www.azid.ru/
+Plugin Name: Teddy ID
+Plugin URI: https://www.teddyid.com/
 Text Domain: taplogin
 Description: Allow your visitors to log in by tapping just one button on their phones, without entering a password.
-Version: 1.0
+Version: 1.2
 Author: Matrix Platform LLC
 License: Public domain
 */
 
+include_once dirname(__FILE__).'/lib/Stateless.php';
 include_once dirname(__FILE__).'/lib/EnvConf.php';
+include_once dirname(__FILE__).'/lib/MatrixCommunication.php';
 include_once dirname(__FILE__).'/lib/TokenManager.php';
 include_once dirname(__FILE__).'/lib/AuthConfirmation.php';
 include_once dirname(__FILE__).'/lib/TapAuthorization.php';
 include_once dirname(__FILE__).'/lib/SecureRandom.php';
 
 
-class TapLogin
+class TeddyID
 {
 	private static $bAskEmail = false;
+	private static $employee_id = null;
 	
 	public static function showWidget()
 	{
 		if (@$_GET['loggedout'] == 'true'){
 			?>
-			<iframe style="display: none" src="//www.azid.ru/auth/?act=logout"></iframe>
+			<iframe style="display: none" src="//www.teddyid.com/auth/logout-empty.php"></iframe>
 			<?php
 		}
 		
@@ -35,38 +38,38 @@ class TapLogin
 		
 		?>
 		<script>
-			function onTapLoginLoaded(){
-				showTapLogin();
+			function onTeddyIDLoaded(){
+				showTeddyID();
 			}
 		</script>
 
 		<?php
-		self::loadTapLogin();
+		self::loadTeddyID();
 	}
 	
-	private static function loadTapLogin()
+	private static function loadTeddyID()
 	{
 		$node_id = get_option('taplogin_node_id');
 		if (!$node_id)
-			throw new Exception("Plase set up TapLogin properly");
+			throw new Exception("Plase set up TeddyID properly");
 		
 		?>
 		<script>
 			
-			function showTapLogin(){
-				if (typeof TapLogin == 'undefined'){
-					setTimeout(showTapLogin, 200);
+			function showTeddyID(){
+				if (typeof TeddyID === 'undefined'){
+					setTimeout(showTeddyID, 200);
 					return;
 				}
-				TapLogin.displayAuthIframe();
+				TeddyID.displayAuthIframe();
 			}
 			
-			var TapLoginProperties = new function(){
+			var TeddyIDProperties = new function(){
 				this.node_id = <?php echo $node_id ?>;
 				this.local_easyxdm_file = '<?php echo plugins_url('easyxdm_name.html', __FILE__) ?>';
-				this.onAuth = function(employee_id, auth_token, url){
-					var f = document.taploginform;
-					f.employee_id.value = employee_id;
+				this.onAuth = function(auth_token_id, auth_token, url){
+					var f = document.teddyidform;
+					f.auth_token_id.value = auth_token_id;
 					f.auth_token.value = auth_token;
 					f.url.value = url;
 					f.submit();
@@ -77,11 +80,11 @@ class TapLogin
 				var async_js = document.createElement('script');
 				async_js.type = 'text/javascript';
 				async_js.async = true;
-				async_js.src = "//www.azid.ru/js/auth.js";
+				async_js.src = "//www.teddyid.com/js/auth.js";
 				async_js.onload = async_js.onreadystatechange = function(){
-					if (typeof TapLogin != 'undefined'){
+					if (typeof TeddyID !== 'undefined'){
 						async_js.onload = async_js.onreadystatechange = null;
-						onTapLoginLoaded();
+						onTeddyIDLoaded();
 					}
 				};
 				var s = document.getElementsByTagName('script')[0];
@@ -90,8 +93,8 @@ class TapLogin
 			
 			(function() {
 				var div = document.createElement('div');
-				div.innerHTML = '<form name="taploginform" style="display: none" method="POST" action="">\
-					<input type="hidden" name="employee_id" />\
+				div.innerHTML = '<form name="teddyidform" style="display: none" method="POST" action="">\
+					<input type="hidden" name="auth_token_id" />\
 					<input type="hidden" name="auth_token" />\
 					<input type="hidden" name="url" />\
 				</form>';
@@ -108,38 +111,39 @@ class TapLogin
 		if (!is_admin())
 			wp_enqueue_script('jquery');
 		
-		if (@$_POST['employee_id'] && @$_POST['auth_token'])
+		if (@$_POST['auth_token_id'] && @$_POST['auth_token'])
 			self::handleLogin();
-		elseif (@$_POST['taplogin_request_id'] && @$_GET['check_authorization_response'])
+		elseif (@$_POST['teddyid_request_id'] && @$_GET['check_authorization_response'])
 			self::checkAuthorizationResponse();
 	}
 	
 	private static function handleLogin()
 	{
-		$employee_id = $_POST['employee_id'];
 		$objAuthConfirmationResponse = AuthConfirmation::confirm(
-				@$_POST['employee_id'], @$_POST['auth_token'], @$_POST['url'], $_SERVER['REMOTE_ADDR']);
+				@$_POST['auth_token_id'], @$_POST['auth_token'], @$_POST['url'], $_SERVER['REMOTE_ADDR']);
 		if (!@$objAuthConfirmationResponse->authenticated)
 			die("not authenticated: ".print_r($objAuthConfirmationResponse, true));
 		
+		$employee_id = $objAuthConfirmationResponse->employee_id;
 		$current_user = wp_get_current_user();
 		$current_user_id = $current_user ? $current_user->ID : null;
 		
 		$user_id = self::getUserIdByEmployeeId($employee_id);
 		if ($user_id && $current_user_id && $user_id != $current_user_id)
-			die(__("Your AZid account is already linked to another user of this site", 'taplogin'));
+			die(__("Your Teddy account is already linked to another user of this site", 'taplogin'));
 		
-		if (!$user_id){ // new AZid user
+		if (!$user_id){ // new TeddyID user
 			if (!$current_user_id){ // login sequence
 				$bRequireEmail = get_option('taplogin_require_email');
 				$user_email = null;
-				if (@$_POST['taplogin_email'] && is_email($_POST['taplogin_email']))
-					$user_email = $_POST['taplogin_email'];
+				if (@$_POST['teddyid_email'] && is_email($_POST['teddyid_email']))
+					$user_email = $_POST['teddyid_email'];
 				elseif (!$bRequireEmail)
 					$user_email = uniqid('', true)."@example.com";
 				
 				if (!$user_email){
 					self::$bAskEmail = true;
+					self::$employee_id = $employee_id;
 					return;
 				}
 				
@@ -179,14 +183,14 @@ class TapLogin
 	
 	private static function checkAuthorizationResponse()
 	{
-		$request_id = $_POST['taplogin_request_id'];
+		$request_id = $_POST['teddyid_request_id'];
 		$arrResponse = TapAuthorization::getAuthorizationResponse($request_id);
 		die(json_encode($arrResponse));
 	}
 	
 	private static function requestEmail()
 	{
-		$objResponse = TapAuthorization::requestData(array('employee_id' => $_POST['employee_id']), 
+		$objResponse = TapAuthorization::requestData(array('employee_id' => self::$employee_id), 
 			array('email'), parse_url(site_url(), PHP_URL_HOST));
 		if (!$objResponse)
 			throw new Exception("requestData failed");
@@ -195,16 +199,16 @@ class TapLogin
 		$request_id = $objResponse->request_id;
 		
 		?>
-		<div id="taplogin_emaildiv">
+		<div id="teddyid_emaildiv">
 			<div style="width: 100%; height: 100%; background-color: #ffffff; position: absolute; top: 0; left: 0; z-index: 1000; opacity: 0.8;"></div>
-			<div id="taplogin_popupdiv" style="position: absolute; top: 0; left: 0; z-index: 1001">
-				<div id="taplogin_box" style="position: absolute; z-index: 1002; background-color: white; border: 1px solid #aaaaaa; border-radius: 4px; box-shadow: 5px 5px 10px rgba(0,0,0,0.5)">
+			<div id="teddyid_popupdiv" style="position: absolute; top: 0; left: 0; z-index: 1001">
+				<div id="teddyid_box" style="position: absolute; z-index: 1002; background-color: white; border: 1px solid #aaaaaa; border-radius: 4px; box-shadow: 5px 5px 10px rgba(0,0,0,0.5)">
 					<div style="padding: 10px">
-						<p id="taplogin_error" style="color: red; font-weight: bold"></p>
-						<p><?php _e("Email is a required field. We sent a request to your phone to get your email address stored with AZid.ru. Please approve the request, or enter your another email below", 'taplogin') ?>:</p>
+						<p id="teddyid_error" style="color: red; font-weight: bold"></p>
+						<p><?php _e("Email is a required field. We sent a request to your phone to get your email address stored with TeddyID.com. Please approve the request, or enter your another email below", 'taplogin') ?>:</p>
 						
-							<label for="taplogin_email"><?php _e("E-mail address", 'taplogin') ?>:</label> <input type='text' id="taplogin_email" name="taplogin_email"/> <input type="submit" value="<?php _e("Continue", 'taplogin') ?>" class="button button-primary button-large"/>
-							<input type="hidden" name="employee_id" value="<?php echo $_POST['employee_id']; ?>"/>
+							<label for="teddyid_email"><?php _e("E-mail address", 'taplogin') ?>:</label> <input type='text' id="teddyid_email" name="teddyid_email"/> <input type="submit" value="<?php _e("Continue", 'taplogin') ?>" class="button button-primary button-large"/>
+							<input type="hidden" name="auth_token_id" value="<?php echo $_POST['auth_token_id']; ?>"/>
 							<input type="hidden" name="auth_token" value="<?php echo $_POST['auth_token']; ?>"/>
 							<input type="hidden" name="url" value="<?php echo $_POST['url']; ?>"/>
 						
@@ -215,7 +219,7 @@ class TapLogin
 		<script>
 			function checkEmail()
 			{
-				var email = jQuery("#taplogin_email").get(0);
+				var email = jQuery("#teddyid_email").get(0);
 				if (email.value.indexOf('@')<0 || email.value.length<6){
 					alert("<?php _e("Please enter a valid email address", 'taplogin')?>");
 					email.focus();
@@ -227,9 +231,9 @@ class TapLogin
 			function adjustPopupPosition()
 			{
 				var widget_width = 500;
-			//	jQuery("#taplogin_box").css({width: widget_width+"px"});
-				document.getElementById("taplogin_box").style.width = widget_width+"px";
-				var widget_height = document.getElementById("taplogin_box").style.height;
+			//	jQuery("#teddyid_box").css({width: widget_width+"px"});
+				document.getElementById("teddyid_box").style.width = widget_width+"px";
+				var widget_height = document.getElementById("teddyid_box").style.height;
 				var windowWidth = window.innerWidth;
 				var windowHeight = window.innerHeight;
 				if (!windowWidth){ // IE 6-8
@@ -251,9 +255,9 @@ class TapLogin
 				var widget_left = windowWidth/2 - widget_width/2;
 				var widget_top = windowHeight/2 - widget_height/2;
 
-			//	jQuery("#taplogin_box").css({'left': widget_left+"px", 'top': widget_top+"px", width: widget_width+"px"});
-				document.getElementById("taplogin_box").style.left = widget_left+"px";
-				document.getElementById("taplogin_box").style.top = widget_top+"px";
+			//	jQuery("#teddyid_box").css({'left': widget_left+"px", 'top': widget_top+"px", width: widget_width+"px"});
+				document.getElementById("teddyid_box").style.left = widget_left+"px";
+				document.getElementById("teddyid_box").style.top = widget_top+"px";
 			}
 			
 			var checker;
@@ -268,21 +272,21 @@ class TapLogin
 				jQuery.post(
 					'?check_authorization_response=1',
 					{
-						taplogin_request_id: <?php echo $request_id; ?>
+						teddyid_request_id: <?php echo $request_id; ?>
 					},
 					function (response){
 						if (response.result == 'ok'){
 							if (response.response == 'Y'){
 								stopWaiting();
-								jQuery("#taplogin_email").val(response.arrFieldValues.email);
-							//	jQuery("#taplogin_email_form").get(0).submit();
+								jQuery("#teddyid_email").val(response.arrFieldValues.email);
+							//	jQuery("#teddyid_email_form").get(0).submit();
 								jQuery("#loginform").get(0).submit();
 							}
 							else if (response.response == 'N')
 								stopWaiting();
 						}
 						else if (response.result == 'error')
-							jQuery("#taplogin_error").html(response.error);
+							jQuery("#teddyid_error").html(response.error);
 						else
 							alert("unrecognized result");
 					},
@@ -292,8 +296,8 @@ class TapLogin
 			
 			jQuery(document).ready(function(){
 				// replace the standard login form with our popup
-				var h = jQuery("#taplogin_emaildiv").html();
-				jQuery("#taplogin_emaildiv").html('');
+				var h = jQuery("#teddyid_emaildiv").html();
+				jQuery("#teddyid_emaildiv").html('');
 				jQuery("#loginform").html(h).submit(checkEmail);
 				adjustPopupPosition();
 				checker = setInterval(checkAuthorizationResponse, 2000);
@@ -346,10 +350,10 @@ class TapLogin
 	}
 	
 	function add_admin_menu() {
-		add_options_page(__('TapLogin Integration', 'taplogin'), __('TapLogin Integration', 'taplogin'), 'manage_options', 'taplogin_setup', array('TapLogin', 'displayAdminSetupPage'));
+		add_options_page(__('TeddyID Integration', 'taplogin'), __('TeddyID Integration', 'taplogin'), 'manage_options', 'taplogin_setup', array('TeddyID', 'displayAdminSetupPage'));
 	//	$current_user = wp_get_current_user();
 	//	if (!$current_user || !$current_user->ID || !self::getEmployeeIdByUserId($current_user->ID))
-			add_menu_page(__('Link to TapLogin', 'taplogin'), 'TapLogin', 'read', 'taplogin', array('TapLogin', 'displayAdminLinkPage'), '', null );
+			add_menu_page(__('Link to TeddyID', 'taplogin'), 'TeddyID', 'read', 'taplogin', array('TeddyID', 'displayAdminLinkPage'), 'https://www.teddyid.com/favicon.ico', null );
 	}
 	
 	private static function saveAdminPage()
@@ -374,18 +378,18 @@ class TapLogin
 		if ($employee_id){
 			?>
 			<div class="wrap">
-				<h2>TapLogin</h2>
+				<h2>Teddy ID</h2>
 				<p><?php _e("You can log in to this site without a password, by tapping just one button on your phone", 'taplogin') ?>.</p>
 				<p><?php _e("You always have an option to login with username/password in case you lose your phone", 'taplogin') ?>.</p>
 			</div>
 			<?php
 		}
 		else{
-			self::loadTapLogin();
+			self::loadTeddyID();
 			?>
 			<div class="wrap">
-				<h2>TapLogin</h2>
-				<p><?php _e("Do you want to log in to this site without a password, by tapping just one button on your phone? You can <a href='javascript:showTapLogin()'>set up your phone for one-tap login</a> right now", 'taplogin') ?>.</p>
+				<h2>Teddy ID</h2>
+				<p><?php _e("Do you want to log in to this site without a password, by tapping just one button on your phone? You can <a href='javascript:showTeddyID()'>set up your phone for one-tap login</a> right now", 'taplogin') ?>.</p>
 				<p><?php _e("You always have an option to login with username/password in case you lose your phone", 'taplogin') ?>.</p>
 			</div>
 			<?php
@@ -406,7 +410,7 @@ class TapLogin
 		?>
 		<div class="wrap">
 			<div id="icon-options-general" class="icon32"><br></div>
-			<h2><?php _e("TapLogin Integration", 'taplogin') ?></h2>
+			<h2><?php _e("TeddyID Integration", 'taplogin') ?></h2>
 			<?php if($bSaved) { ?>
 			<div class="settings-error updated"><p><?php _e("Options saved", 'taplogin') ?>.</p></div>
 			<?php } ?>
@@ -415,7 +419,7 @@ class TapLogin
 			<?php } ?>
 			<form method="post" action="">
 				<p><?php _e("Please edit Node ID and Secret Key only during initial setup and don't change them afterwards (unless the secret key was compromised)", 'taplogin') ?>.</p>
-				<p><?php _e("If it is the first time that you set up TapLogin for your site, the secret key was already generated for you (otherwise please enter something random for Secret Key). Please <a target='_blank' href='https://www.azid.ru/control/new_desktop_app_node.php'>create a new desktop node at AZid.ru</a> by copying and pasting the secret key from here to AZid.ru, then enter here the ID of the newly created node. Save changes, and you're done", 'taplogin') ?>.</p>
+				<p><?php _e("If it is the first time that you set up TeddyID for your site, the secret key was already generated for you (otherwise please enter something random for Secret Key). Please <a target='_blank' href='https://www.teddyid.com/control/new_desktop_app_node.php'>create a new desktop node at TeddyID.com</a> by copying and pasting the secret key from here to TeddyID.com, then enter here the ID of the newly created node. Save changes, and you're done", 'taplogin') ?>.</p>
 				<table>
 					<tr>
 						<td style="width: 100px;">Node ID</td>
@@ -452,8 +456,10 @@ class TapLogin
 	}
 }
 
-register_activation_hook( __FILE__, array('TapLogin', 'install') );
-add_action('login_form', array('TapLogin', 'showWidget'));
-add_action('init', array('TapLogin', 'handleRequest'));
-add_action('admin_menu', array('TapLogin', 'add_admin_menu'));
-load_plugin_textdomain('taplogin', false, basename( dirname( __FILE__ ) ) . '/languages/' );
+
+
+register_activation_hook( __FILE__, array('TeddyID', 'install') );
+add_action('login_form', array('TeddyID', 'showWidget'));
+add_action('init', array('TeddyID', 'handleRequest'));
+add_action('admin_menu', array('TeddyID', 'add_admin_menu'));
+load_plugin_textdomain('taplogin', false, basename( dirname( __FILE__ ) ) . '/languages' );
