@@ -1,7 +1,7 @@
 === Teddy ID ===
 Contributors: matrixplatform
 Donate link: N/A
-Tags: login, authentication, password, passwordless, sign in, 2FA, TFA
+Tags: login, authentication, password, passwordless, sign in, 2FA, TFA, mfa, log in, multi-factor, two factor, sso, single sign-on, 2-factor, two-factor authentication
 Requires at least: 3.0
 Tested up to: 3.9.1
 Stable tag: trunk
