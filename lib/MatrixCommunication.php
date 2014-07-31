@@ -7,13 +7,13 @@
  */
 class MatrixCommunication extends Stateless
 {
-	const RESPONSE_TIMOUT = 30;
-	const CONNECT_TIMOUT = 100;
+	const RESPONSE_TIMEOUT = 30;
+	const CONNECT_TIMEOUT = 100;
 	
     public static function getMatrixServerUrl() {
 		switch (EnvConf::MATRIX_LOCATION){
 			case 'prod': return 'https://www.teddyid.com';
-			case 'dev': return 'https://teddyid.matrixdev.ru';
+			case 'dev': return 'https://www.teddyid.matrixdev.ru';
 			case 'same': return EnvConf::PROTOCOL . '://www.teddyid.' . EnvConf::getTld('com');
 			default: throw new Exception("unrecognized MATRIX_LOCATION: ".EnvConf::MATRIX_LOCATION);
 		}
@@ -23,8 +23,8 @@ class MatrixCommunication extends Stateless
 	{
 		$objCurl = curl_init($url);
 		curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($objCurl, CURLOPT_TIMEOUT, static::RESPONSE_TIMOUT);
-		curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, static::CONNECT_TIMOUT);
+		curl_setopt($objCurl, CURLOPT_TIMEOUT, static::RESPONSE_TIMEOUT);
+		curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, static::CONNECT_TIMEOUT);
 		curl_setopt($objCurl, CURLOPT_HEADER, 0);
 		curl_setopt($objCurl, CURLOPT_POST, 1);
 		curl_setopt($objCurl, CURLOPT_POSTFIELDS, http_build_query($rgPostFields));
