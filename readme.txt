@@ -55,6 +55,9 @@ Initial release.
 = 1.2 =
 Now user compares two pictures, on your site and on his phone, and if they match, user approves the login.
 
+= 1.2.1 =
+Minor bugfixes.
+
 == Upgrade Notice ==
 
 = 1.0 =
