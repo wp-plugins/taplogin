@@ -4,7 +4,7 @@ Plugin Name: Teddy ID
 Plugin URI: https://www.teddyid.com/
 Text Domain: taplogin
 Description: Allow your visitors to log in by tapping just one button on their phones, without entering a password.
-Version: 1.2
+Version: 1.2.1
 Author: Matrix Platform LLC
 License: Public domain
 */
@@ -50,9 +50,10 @@ class TeddyID
 	private static function loadTeddyID()
 	{
 		$node_id = get_option('taplogin_node_id');
-		if (!$node_id)
-			throw new Exception("Plase set up TeddyID properly");
-		
+		if (!$node_id){
+			trigger_error("Plase set up TeddyID properly");
+			return;
+		}
 		?>
 		<script>
 			
@@ -353,6 +354,7 @@ class TeddyID
 		add_options_page(__('TeddyID Integration', 'taplogin'), __('TeddyID Integration', 'taplogin'), 'manage_options', 'taplogin_setup', array('TeddyID', 'displayAdminSetupPage'));
 	//	$current_user = wp_get_current_user();
 	//	if (!$current_user || !$current_user->ID || !self::getEmployeeIdByUserId($current_user->ID))
+		if (get_option('taplogin_node_id'))
 			add_menu_page(__('Link to TeddyID', 'taplogin'), 'TeddyID', 'read', 'taplogin', array('TeddyID', 'displayAdminLinkPage'), 'https://www.teddyid.com/favicon.ico', null );
 	}
 	
@@ -462,4 +464,7 @@ register_activation_hook( __FILE__, array('TeddyID', 'install') );
 add_action('login_form', array('TeddyID', 'showWidget'));
 add_action('init', array('TeddyID', 'handleRequest'));
 add_action('admin_menu', array('TeddyID', 'add_admin_menu'));
-load_plugin_textdomain('taplogin', false, basename( dirname( __FILE__ ) ) . '/languages' );
+//if (!load_plugin_textdomain('taplogin', false, basename( dirname( __FILE__ ) ) . '/languages' ))
+if (!load_plugin_textdomain('taplogin', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ))
+	{}//die("load_plugin_textdomain failed");
+

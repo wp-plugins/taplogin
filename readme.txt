@@ -3,7 +3,7 @@ Contributors: matrixplatform
 Donate link: N/A
 Tags: login, authentication, password, passwordless, sign in, 2FA, TFA, mfa, log in, multi-factor, two factor, sso, single sign-on, 2-factor, two-factor authentication
 Requires at least: 3.0
-Tested up to: 3.9.1
+Tested up to: 4.0
 Stable tag: trunk
 License: Public domain
 
@@ -13,7 +13,7 @@ Single Sign-On service for secure login to web sites by tapping just one button 
 
 Teddy ID is a Single Sign-On service for logging in users to your site by tapping just one button on user's phone, without entering a password, yet as secure as modern internet banking sites. Every time a user logs in to your site, TeddyID recognizes the user automatically and sends a picture to his phone and to his computer. User compares the pictures and approves login by tapping just one button in TeddyID app on his phone. Passwords are no longer needed, and security is ensured by use of two devices associated with the user: a computer and a phone. This is two factor authentication made simple.
 
-Sites where TeddyID already works:
+Sample sites where TeddyID already works:
 https://www.TeddyID.com
 https://www.billinger.ru/control/
 
