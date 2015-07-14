@@ -3,21 +3,19 @@ Contributors: matrixplatform
 Donate link: N/A
 Tags: login, authentication, password, passwordless, sign in, 2FA, TFA, mfa, log in, multi-factor, two factor, sso, single sign-on, 2-factor, two-factor authentication
 Requires at least: 3.0
-Tested up to: 4.0
+Tested up to: 4.2.2
 Stable tag: trunk
 License: Public domain
 
-Single Sign-On service for secure login to web sites by tapping just one button on your phone, no password required.
+Secure login to your site by tapping just one button on the phone, no password required.
 
 == Description ==
 
-Teddy ID is a Single Sign-On service for logging in users to your site by tapping just one button on user's phone, without entering a password, yet as secure as modern internet banking sites. Every time a user logs in to your site, TeddyID recognizes the user automatically and sends a picture to his phone and to his computer. User compares the pictures and approves login by tapping just one button in TeddyID app on his phone. Passwords are no longer needed, and security is ensured by use of two devices associated with the user: a computer and a phone. This is two factor authentication made simple.
+Teddy ID is a secure authentication service that allows your users to log in to your site by tapping just one button on user's phone, without entering a password, yet as secure as modern internet banking sites. Every time a user logs in to your site, TeddyID recognizes the user automatically and sends a picture to his phone and to his computer. The user makes sure the pictures match and approves login by tapping "Yes" button in TeddyID app on his phone. Passwords are no longer needed, and security is ensured by use of two devices associated with the user: a computer and a phone. This is two factor authentication made simple.
 
-Sample sites where TeddyID already works:
-https://www.TeddyID.com
-https://www.billinger.ru/control/
+Try it for yourself on our site https://www.TeddyID.com.
 
-TeddyID will be displayed as a widget above your page content. In most cases the login dialog takes place within this widget and user never has to leave your site.
+TeddyID will be displayed as a widget above your page content. In most cases, the entire login flow takes place within this widget and the user never has to leave your site.
 
 New users will be automatically added to your wordpress database. There is an option to auto-generate email addresses to further ease the registration process in case your site doesn't require emails.
 
